@@ -1,0 +1,11 @@
+requests
+beautifulsoup4
+pandas
+numpy
+selenium
+pandas-gbq
+google-cloud-storage
+google-cloud-bigquery
+fsspec
+gcsfs
+lxml
