@@ -38,6 +38,8 @@ def run_batch(args):
     try:
         try:
             processed_cik = gcs_ops.read_json_from_gcs(f"run_log/BATCH_LOG/{args.get('batch_name')}_cik_process.json")
+            if not processed_cik:
+                processed_cik = {}
         except:
             processed_cik = {}
             
@@ -80,7 +82,6 @@ if __name__ == "__main__":
     
         print(f"▶️ Running command: {command} with args: {args}")
         if command == "run_sec":
-            print("Running clinical debate")
             run_batch(args)
         else:
             print(f"❌ Unknown command: {command}")
