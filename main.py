@@ -12,7 +12,7 @@ import time
 from concurrent.futures import ThreadPoolExecutor, as_completed
 import gcs_ops
 import random
-import sec
+import sec.sec as sec
 import traceback
 
 # Convert key=value pairs into a dictionary
