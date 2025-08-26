@@ -1,6 +1,8 @@
 
 
+BUCKET = "financial_data_nizar"
 
+CIK_PATH = "run_log/BATCH_LOG/all_cik.json"
 
 bq_dtype = {
         'scraping_url': 'str',

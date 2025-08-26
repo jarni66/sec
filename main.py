@@ -1,12 +1,7 @@
 import asyncio
 import sys
 import traceback
-from clincal_reasoning import ClinicalDebate
-import gcs_operation
-import discovery
 import config
-import db_ops   
-import enrich
 import requests
 from datetime import datetime
 import json
@@ -14,10 +9,10 @@ import pandas as pd
 import uuid
 import config
 import time
-from concurrent.futures import ThreadPoolExecutor
-
-
-
+from concurrent.futures import ThreadPoolExecutor, as_completed
+import gcs_ops
+import random
+import sec
 
 # Convert key=value pairs into a dictionary
 def parse_key_value_args(args):
@@ -34,6 +29,45 @@ def parse_key_value_args(args):
     return result
 
 
+def run_sec(cik,batch_name):
+    run_cik = sec.ProcessCIK(cik=cik, batch=batch_name)
+    run_cik.run()
+
+def run_batch(args):
+    try:
+        processed_cik = gcs_ops.read_json_from_gcs(f"run_log/BATCH_LOG/{args.batch_name}_cik_process.json")
+    except:
+        processed_cik = {}
+        
+    processed_cik_list = []
+    for k,v in processed_cik.items():
+        processed_cik_list += v
+
+    all_ciks = gcs_ops.read_json_from_gcs(config.CIK_PATH)
+    cik_pools = [i.get('cik') for i in all_ciks]
+
+    unprocessed_cik = [i for i in cik_pools if i not in processed_cik_list]
+
+    picked_cik = random.sample(unprocessed_cik, int(args.batch_size))
+
+    object_status = {
+        f"{args.batch_name}_{args.batch_num}" : picked_cik
+    }
+
+    gcs_ops.write_or_update_json_to_gcs(f"run_log/BATCH_LOG/{args.batch_name}_cik_process.json", object_status)
+
+
+
+    with ThreadPoolExecutor(max_workers=3) as executor:
+        # Submit tasks
+        futures = [executor.submit(run_sec, i, args.batch_name) for i in picked_cik]
+        
+        # Wait for them to complete and get results as they finish
+        for future in as_completed(futures):
+            result = future.result()
+            print(f"Got: {result}")
+
+
 if __name__ == "__main__":
     try:
         command = sys.argv[1]
@@ -42,9 +76,9 @@ if __name__ == "__main__":
 
     
         print(f"▶️ Running command: {command} with args: {args}")
-        if command == "debate_clinical":
+        if command == "run_sec":
             print("Running clinical debate")
-
+            run_batch(args)
         else:
             print(f"❌ Unknown command: {command}")
             sys.exit(1)
