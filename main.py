@@ -61,7 +61,7 @@ def run_batch(args):
 
         gcs_ops.write_or_update_json_to_gcs(f"run_log/BATCH_LOG/{args.get('batch_name')}_cik_process.json", object_status)
 
-        with ThreadPoolExecutor(max_workers=3) as executor:
+        with ThreadPoolExecutor(max_workers=8) as executor:
             # Submit tasks
             futures = [executor.submit(run_sec, i, args.get('batch_name')) for i in picked_cik]
             
