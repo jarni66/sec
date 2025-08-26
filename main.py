@@ -37,7 +37,7 @@ def run_sec(cik,batch_name):
 def run_batch(args):
     try:
         try:
-            processed_cik = gcs_ops.read_json_from_gcs(f"run_log/BATCH_LOG/{args.batch_name}_cik_process.json")
+            processed_cik = gcs_ops.read_json_from_gcs(f"run_log/BATCH_LOG/{args.get('batch_name')}_cik_process.json")
         except:
             processed_cik = {}
             
@@ -49,18 +49,18 @@ def run_batch(args):
         cik_pools = [i.get('cik') for i in all_ciks]
 
         unprocessed_cik = [i for i in cik_pools if i not in processed_cik_list]
-
-        picked_cik = random.sample(unprocessed_cik, int(args.batch_size))
+        print("Length unprocessed cik :",len(unprocessed_cik))
+        picked_cik = random.sample(unprocessed_cik, int(args.get('batch_size')))
 
         object_status = {
-            f"{args.batch_name}_{args.batch_num}" : picked_cik
+            f"{args.get('batch_name')}_{args.get('batch_num')}" : picked_cik
         }
 
-        gcs_ops.write_or_update_json_to_gcs(f"run_log/BATCH_LOG/{args.batch_name}_cik_process.json", object_status)
+        gcs_ops.write_or_update_json_to_gcs(f"run_log/BATCH_LOG/{args.get('batch_name')}_cik_process.json", object_status)
 
         with ThreadPoolExecutor(max_workers=3) as executor:
             # Submit tasks
-            futures = [executor.submit(run_sec, i, args.batch_name) for i in picked_cik]
+            futures = [executor.submit(run_sec, i, args.get('batch_name')) for i in picked_cik]
             
             # Wait for them to complete and get results as they finish
             for future in as_completed(futures):

@@ -29,10 +29,10 @@ def get_all_acsn():
 
 
 def upload_to_bq(args):
-    batch_url = f"gs://financial_data_nizar/run_log/{args.batch_name}"
+    batch_url = f"gs://financial_data_nizar/run_log/{args.get('batch_name')}"
     all_acsn = get_all_acsn()
 
-    uploaded_cik_form_path = f"gs://financial_data_nizar/run_log/BATCH_LOG/{args.batch_name}_upload.json"
+    uploaded_cik_form_path = f"gs://financial_data_nizar/run_log/BATCH_LOG/{args.get('batch_name')}_upload.json"
 
     try:
         processed_cik_form = gcs_ops.read_json_from_gcs(uploaded_cik_form_path)
