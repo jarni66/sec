@@ -50,10 +50,11 @@ class ProcessCIK:
         self.records = []
 
     def save_form(self):
-        df = pd.DataFrame(self.records)
+        if self.records:
+            df = pd.DataFrame(self.records)
 
-        op_path = f"{RUN_LOG}/{self.batch}/{self.cik}.csv"
-        df.to_csv(op_path, index=False)
+            op_path = f"{RUN_LOG}/{self.batch}/{self.cik}.csv"
+            df.to_csv(op_path, index=False)
 
 
     def cik_form(self):
@@ -62,7 +63,6 @@ class ProcessCIK:
         """
 
         session = requests.session()
-        forms = []
         response = session.get(f'https://data.sec.gov/submissions/CIK{self.cik}.json', headers=headers)
         print("Get json forms", response.status_code)
         if response.status_code == 200:
@@ -91,7 +91,7 @@ class ProcessCIK:
             df_forms = df_forms[df_forms['form'].str.contains('13F')]
             
             records = df_forms.to_dict(orient="records")
-            print("Length ACSN to process", len(records))
+            print(f"Length ({self.cik}) ACSN to process", len(records))
             for r in records:
                 process_acsn = ProcessACSN(r)
                 process_acsn.run()

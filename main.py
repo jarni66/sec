@@ -33,6 +33,7 @@ def parse_key_value_args(args):
 def run_sec(cik,batch_name):
     run_cik = sec.ProcessCIK(cik=cik, batch=batch_name)
     run_cik.run()
+    time.sleep(1)
 
 def run_batch(args):
     try:
@@ -67,7 +68,7 @@ def run_batch(args):
             # Wait for them to complete and get results as they finish
             for future in as_completed(futures):
                 result = future.result()
-                print(f"Got: {result}")
+                # print(f"Got: {result}")
     except:
         error = traceback.print_exc()
         print(error)
