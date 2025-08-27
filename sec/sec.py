@@ -32,7 +32,6 @@ headers = {
         'sec-fetch-dest': 'empty',
         'sec-fetch-mode': 'cors',
         'sec-fetch-site': 'same-site',
-        # 'user-agent': 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/130.0.0.0 Safari/537.36',
         'user-agent': 'Mario bot project resnatim@gmail.com',
     }
 
@@ -248,9 +247,12 @@ class ProcessACSN:
                 "voting_authority_sole": info.findtext(ns_tag("votingAuthority") + "/" + ns_tag("Sole"), default="0", namespaces=ns).strip(),
                 "voting_authority_shared": info.findtext(ns_tag("votingAuthority") + "/" + ns_tag("Shared"), default="0", namespaces=ns).strip(),
                 "voting_authority_none":info.findtext(ns_tag("votingAuthority") + "/" + ns_tag("None"), default="0", namespaces=ns).strip(),
-
-
             }
+            entry['value'] = entry['value'].replace(',','')
+            entry['shares_or_percent_amount'] = entry['shares_or_percent_amount'].replace(',','')
+            entry['voting_authority_sole'] = entry['voting_authority_sole'].replace(',','')
+            entry['voting_authority_shared'] = entry['voting_authority_shared'].replace(',','')
+            entry['voting_authority_none'] = entry['voting_authority_none'].replace(',','')
             data.append(entry)
 
         return data

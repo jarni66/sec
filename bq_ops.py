@@ -62,7 +62,7 @@ def upload_to_bq(args):
                 df_add,
                 destination_table=table_id,
                 project_id=project_id,
-                if_exists='append',  # 'replace', 'fail', or 'append' (append new data)
+                if_exists='append',  
             )
             print(f'APPENDED', len(df_add))
             df_add = pd.DataFrame()

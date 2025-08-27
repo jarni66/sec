@@ -121,7 +121,6 @@ def read_json_from_gcs(blob_name: str) -> dict | list:
         bucket = storage_client.bucket(bucket_name)
         blob = bucket.blob(blob_name)
         
-        # Download the blob's content as a string
         json_string = blob.download_as_text()
         
         # Deserialize the JSON string into a Python object

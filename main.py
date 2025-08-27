@@ -48,8 +48,13 @@ def run_batch(args):
         for k,v in processed_cik.items():
             processed_cik_list += v
 
-        all_ciks = gcs_ops.read_json_from_gcs(config.CIK_PATH)
-        cik_pools = [i.get('cik') for i in all_ciks]
+        if not args.get('cik_list'):
+            all_ciks = gcs_ops.read_json_from_gcs(config.CIK_PATH)
+            cik_pools = [i.get('cik') for i in all_ciks]
+        else:
+            cik_pools = gcs_ops.read_json_from_gcs("run_log/BATCH_LOG/cik_list.json")
+            if not cik_pools:
+                cik_pools = []
 
         unprocessed_cik = [i for i in cik_pools if i not in processed_cik_list]
         print("Length unprocessed cik :",len(unprocessed_cik))
@@ -65,7 +70,6 @@ def run_batch(args):
                 # Submit tasks
                 futures = [executor.submit(run_sec, i, args.get('batch_name')) for i in picked_cik]
                 
-                # Wait for them to complete and get results as they finish
                 for future in as_completed(futures):
                     result = future.result()
                     # print(f"Got: {result}")
